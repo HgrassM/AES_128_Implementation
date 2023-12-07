@@ -78,3 +78,45 @@ pub fn sub_word (exp_bytes:[u8;4]) -> [u8;4] {
 
     return sub_array;
 }
+
+//Função que retorna bytes de acordo com o cálcuo
+//realizado na função
+pub fn rcon(round:u8) -> u8 {
+    let rcon_calc = (round/(16/4))-1;
+    let hex_value: &str = match rcon_calc {
+        0=> "01",
+        1=> "02",
+        2=> "04",
+        3=> "08",
+        4=> "10",
+        5=> "20",
+        6=> "40",
+        7=> "80",
+        8=> "1B",
+        9=> "36",
+        10=> "6C",
+        11=> "D8",
+        12=> "AB",
+        13=> "4D",
+        14=> "9A",
+        _=> "00"
+    };
+
+    let result = u8::from_str_radix(hex_value, 16).unwrap();
+
+    return result
+}
+
+
+//Função que retorna bytes de acordo com o offset
+//da chave primária
+pub fn k_off(offset: usize, primary_key: [u8;16]) -> [u8;4]{
+    let mut values: [u8;4] = [0,0,0,0];
+    let mut x = 0; 
+    for mut i in values{
+        i = primary_key[offset + x];
+        x+=1;
+    }
+
+    return values;
+}
