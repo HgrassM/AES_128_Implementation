@@ -113,8 +113,8 @@ pub fn rcon(round:u8) -> u8 {
 pub fn k_off(offset: usize, primary_key: [u8;16]) -> [u8;4]{
     let mut values: [u8;4] = [0,0,0,0];
     let mut x = 0; 
-    for mut i in values{
-        i = primary_key[offset + x];
+    while x < 4 {
+        values[x] = primary_key[offset + x];
         x+=1;
     }
 
