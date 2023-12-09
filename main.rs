@@ -4,7 +4,8 @@ fn main() {
     //Primeiro, o código produz uma chave com bytes
     //expandidos a partir de uma chave primária de 16 bytes
 
-    let primary_key: [u8;16] = [21,176,34,78,132,92,12,0,6,8,43,98,103,13,65,87];
+    let primary_key: [u8;16] = [0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79, 0x20, 0x4b, 0x75,
+                                0x6e, 0x67, 0x20, 0x46, 0x75];
 
     let exp_key: Vec<u8> = key_expansion::generate_exp_key(primary_key);
     
@@ -13,7 +14,8 @@ fn main() {
     //Printa os bytes em sistema decimal
     //Printa o tamanho da chave expandida
     while x < exp_key.len(){
-        let a = exp_key[x];
+        let b = exp_key[x];
+        let a = format!("{b:02X}");
         println!("Byte em decimal: {a}");
         x+=1;
     }
