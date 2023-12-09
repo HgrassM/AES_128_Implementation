@@ -11,12 +11,12 @@ fn main() {
     
     let mut x = 0;
 
-    //Printa os bytes em sistema decimal
+    //Printa os bytes em sistema hexadecimal
     //Printa o tamanho da chave expandida
     while x < exp_key.len(){
         let b = exp_key[x];
         let a = format!("{b:02X}");
-        println!("Byte em decimal: {a}");
+        println!("Byte em hexadecimal: {a}");
         x+=1;
     }
 
