@@ -1,32 +1,25 @@
 mod key_expansion;
 
 fn main() {
-    //Testando as funções
+    //Primeiro, o código produz uma chave com bytes
+    //expandidos a partir de uma chave primária de 16 bytes
+
+    let primary_key: [u8;16] = [21,176,34,78,132,92,12,0,6,8,43,98,103,13,65,87];
+
+    let exp_key: Vec<u8> = key_expansion::generate_exp_key(primary_key);
     
-    let string: String = String::from("D5fg");
-    let mut array:[u8;4] = [0;4];
     let mut x = 0;
-    for b in string.bytes() {
-        array[x] = b;
-        x += 1;
+
+    //Printa os bytes em sistema decimal
+    //Printa o tamanho da chave expandida
+    while x < exp_key.len(){
+        let a = exp_key[x];
+        println!("Byte em decimal: {a}");
+        x+=1;
     }
 
-    let bytes: [u8;4] = key_expansion::rot_word(array);
-    let mut vector: Vec<u8> = Vec::new();
-    vector.push(bytes[0]);
-    vector.push(bytes[1]);
-    vector.push(bytes[2]);
-    vector.push(bytes[3]);
-    let s = String::from_utf8_lossy(&vector);
-    println!("{s} rot word");
+    let a = exp_key.len();
+    println!("Tamanho: {a}");
 
-    let bytes2 = key_expansion::sub_word(array);
-    let mut vector2: Vec<u8> = Vec::new();
-    vector2.push(bytes2[0]);
-    vector2.push(bytes2[1]);
-    vector2.push(bytes2[2]);
-    vector2.push(bytes2[3]);
-    let s2 = String::from_utf8_lossy(&vector2);
-    println!("{s2} sub word");
-
+    
 }
