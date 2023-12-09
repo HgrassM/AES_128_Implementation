@@ -38,18 +38,19 @@ pub fn sub_word (exp_bytes:[u8;4]) -> [u8;4] {
 
     let mut y = 0;
 
-    for b in exp_bytes {
-        let hex_value = format!("{b:X}");
-        let mut x = 0;
+    let mut column = 0;
+    let mut line = 0;
 
+
+    for b in exp_bytes {
+        let hex_value = format!("{b:02X}");
+        let mut x = 0;
+        
         for c in hex_value.chars() {
             hex_units[x] = c;
             x+=1
         }
-
-        
-        let mut column = 0;
-        let mut line = 0;
+     
         x = 0;
 
         for c in lc {
@@ -61,6 +62,7 @@ pub fn sub_word (exp_bytes:[u8;4]) -> [u8;4] {
         }
 
         x = 0;
+
         for c in lc {
             if c == hex_units[1] {
                 column = x+1;
@@ -70,7 +72,6 @@ pub fn sub_word (exp_bytes:[u8;4]) -> [u8;4] {
         }
 
         let index = (((line*16)-16) + (column))-1;
-
         sub_array[y] = u8::from_str_radix(s_box[index], 16).unwrap();
 
         y+=1;
@@ -81,7 +82,7 @@ pub fn sub_word (exp_bytes:[u8;4]) -> [u8;4] {
 
 //Função que retorna bytes de acordo com o cálcuo
 //realizado na função
-pub fn rcon(round:u8) -> u8 {
+pub fn rcon(round:usize) -> [u8;4] {
     let rcon_calc = (round/(16/4))-1;
     let hex_value: &str = match rcon_calc {
         0=> "01",
@@ -102,21 +103,145 @@ pub fn rcon(round:u8) -> u8 {
         _=> "00"
     };
 
-    let result = u8::from_str_radix(hex_value, 16).unwrap();
-
-    return result
+    let mut x = 0;
+    let mut result: [u8;4] = [0;4];
+    while x < 4 {
+        if x == 0{
+            result[x] = u8::from_str_radix(hex_value, 16).unwrap();
+        }else{
+            result[x] = u8::from_str_radix("00", 16).unwrap();
+        }
+        x+=1;
+    }
+    return result;
 }
 
 
 //Função que retorna bytes de acordo com o offset
 //da chave primária
-pub fn k_off(offset: usize, primary_key: [u8;16]) -> [u8;4]{
-    let mut values: [u8;4] = [0,0,0,0];
+pub fn k_off(offset: usize, primary_key: [u8;16]) -> [u8;4] {
+    let mut result: [u8;4] = [0;4];
     let mut x = 0; 
     while x < 4 {
-        values[x] = primary_key[offset + x];
+        result[x] = primary_key[offset + x];
         x+=1;
     }
 
-    return values;
+    return result;
+}
+
+//Função que retorna bytes de acordo com o offset
+//da chave expandida
+pub fn ek_off(offset: usize, exp_key: Vec<u8>) -> [u8;4] {
+    let mut result: [u8;4] = [0;4];
+    let mut x = 0;
+    while x < 4 {
+        result[x] = exp_key[offset + x];
+        x+=1;
+    }
+
+    return result;
+}
+
+//Função que gera a chave expandida
+pub fn generate_exp_key(primary_key: [u8;16]) -> Vec<u8> {
+    let mut round = 0;
+    let mut exp_key: Vec<u8> = Vec::new();
+
+    //Rounds 0-3
+    {   
+        let mut offset = 0;
+        while round < 4 {
+            let added_bytes: [u8;4] = k_off(offset, primary_key);
+
+            for b in added_bytes {
+                exp_key.push(b);
+            }
+
+            offset += 4;
+            round += 1;
+        }
+    }
+
+    //Rounds 4-43
+    {   
+        let mut added_bytes: [u8;4] = [0;4];
+        let mut sub_round = 4;
+
+        while round < 44{
+            
+            if round == sub_round && round == 4 {
+                //Realiza as operações do round
+
+                let mut x = 0;
+                let sub_bytes: [u8;4] = sub_word(rot_word(ek_off((round-1)*4, exp_key.clone())));
+                let rcon_bytes: [u8;4] = rcon(round);
+                let ek_bytes: [u8;4] = ek_off((round-4)*4, exp_key.clone());
+                
+                while x < 4 {
+                    added_bytes[x] = sub_bytes[x] ^ rcon_bytes[x] ^ ek_bytes[x];
+                    x+=1;
+                }
+
+                x = 0;
+                //Adiciona os bytes resultantes da operação
+                //na chave expandida
+                while x < 4{
+                    exp_key.push(added_bytes[x]);
+                    x+=1;
+                }
+
+                //Atualiza o sub round
+                sub_round += 4;
+
+            } else if round == sub_round && round != 4 {
+                //Realiza as operações do round
+
+                let mut x = 0;
+                let sub_bytes: [u8;4] = sub_word(rot_word(ek_off((round-4)*4, exp_key.clone())));
+                let rcon_bytes: [u8;4] = rcon(round);
+                let ek_bytes: [u8;4] = ek_off((round-4)*4, exp_key.clone());
+                
+                while x < 4 {
+                    added_bytes[x] = sub_bytes[x] ^ rcon_bytes[x] ^ ek_bytes[x];
+                    x+=1;
+                }
+
+                x = 0;
+                //Adiciona os bytes resultantes da operação
+                //na chave expandida
+                while x < 4{
+                    exp_key.push(added_bytes[x]);
+                    x+=1;
+                }
+
+                //Atualiza o sub round
+                sub_round += 4;
+
+            } else {
+                let ek_bytes1 = ek_off((round-1)*4, exp_key.clone());
+                let ek_bytes2 = ek_off((round-4)*4, exp_key.clone());
+                let mut x = 0;
+
+                while x < 4 {
+                    added_bytes[x] = ek_bytes1[x] ^ ek_bytes2[x];
+                    x+=1;
+                }
+
+                x = 0;
+                //Adiciona os bytes resultantes da operação
+                //na chave expandida
+                while x < 4{
+                    exp_key.push(added_bytes[x]);
+                    x+=1;
+                }
+
+            }
+
+            round += 1;           
+        }
+
+    }
+
+    return exp_key;
 }
