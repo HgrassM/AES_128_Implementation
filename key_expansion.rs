@@ -170,35 +170,11 @@ pub fn generate_exp_key(primary_key: [u8;16]) -> Vec<u8> {
 
         while round < 44{
             
-            if round == sub_round && round == 4 {
+            if round == sub_round {
                 //Realiza as operações do round
 
                 let mut x = 0;
                 let sub_bytes: [u8;4] = sub_word(rot_word(ek_off((round-1)*4, exp_key.clone())));
-                let rcon_bytes: [u8;4] = rcon(round);
-                let ek_bytes: [u8;4] = ek_off((round-4)*4, exp_key.clone());
-                
-                while x < 4 {
-                    added_bytes[x] = sub_bytes[x] ^ rcon_bytes[x] ^ ek_bytes[x];
-                    x+=1;
-                }
-
-                x = 0;
-                //Adiciona os bytes resultantes da operação
-                //na chave expandida
-                while x < 4{
-                    exp_key.push(added_bytes[x]);
-                    x+=1;
-                }
-
-                //Atualiza o sub round
-                sub_round += 4;
-
-            } else if round == sub_round && round != 4 {
-                //Realiza as operações do round
-
-                let mut x = 0;
-                let sub_bytes: [u8;4] = sub_word(rot_word(ek_off((round-4)*4, exp_key.clone())));
                 let rcon_bytes: [u8;4] = rcon(round);
                 let ek_bytes: [u8;4] = ek_off((round-4)*4, exp_key.clone());
                 
