@@ -1,4 +1,4 @@
-fn trocar_bytes(mut registro: Vec<usize>)-> Vec<usize>{
+pub fn trocar_bytes(mut registro: Vec<u8>)-> Vec<u8>{
     // tabela sbox, byte > byte_trocado, usado na codificação
     let sbox = vec![0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01,   0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -20,14 +20,15 @@ fn trocar_bytes(mut registro: Vec<usize>)-> Vec<usize>{
 
     //substitui cada byte pelo correspondente na sbox usado na decodificação
     for n in 0..=15{
-        registro[n] = sbox[registro[n]]
+        registro[n] = sbox[registro[n] as usize]
     }
-    println!("Meu vetor apos sbox: {:?}", registro);
+    //println!("Meu vetor apos sbox: {:x?}", registro);
     return registro
 
 }
 
-fn trocar_inverse_bytes(mut registro: Vec<usize>)-> Vec<usize>{
+
+pub fn trocar_inverse_bytes(mut registro: Vec<u8>)-> Vec<u8>{
     // inverso da tabela sbox,  byte_trocado > byte
     let inversesbox = vec![0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -49,65 +50,84 @@ fn trocar_inverse_bytes(mut registro: Vec<usize>)-> Vec<usize>{
 
     //substitui cada byte pelo correspondente na inversesbox
     for n in 0..=15{
-        registro[n] = inversesbox[registro[n]]
+        registro[n] = inversesbox[registro[n] as usize]
     }
-    println!("Meu vetor apos inversesbox: {:?}",registro);
+    //println!("Meu vetor apos inversesbox: {:x?}",registro);
     return registro
 }
 
-fn desloca_linha(mut registro: Vec<usize>)-> Vec<usize>{
-    let mut slice: Vec<_>;
+
+
+//ficar atento que a matriz do AES é baseada em colum-major enquanto que as representacoes em vetores sao row-major
+//um deslocamento das linhas se torna um deslocamento das colunas
+pub fn desloca_linha(registro: Vec<u8>)-> Vec<u8>{
+    let temp: Vec<u8> = vec![
+        registro[0], registro[5], registro[10], registro[15],
+        registro[4], registro[9], registro[14], registro[3],
+        registro[8], registro[13], registro[2], registro[7],
+        registro[12], registro[1], registro[6], registro[11]
+    ];
+
+    //println!("Meu vetor apos deslocar as linhas: {:x?}",temp);
+    return temp
 
     //desloca a segunda linha em 1 byte
-    slice= [registro[5],registro[6],registro[7],registro[4]].to_vec();
-    registro.splice(4..8, slice);
+    //slice= [registro[5],registro[6],registro[7],registro[4]].to_vec();
+    //registro.splice(4..8, slice);
 
     //desloca a terceira linha em 2 bytes
-    slice= [registro[10],registro[11],registro[8],registro[9]].to_vec();
-    registro.splice(8..12, slice);
+    //slice= [registro[10],registro[11],registro[8],registro[9]].to_vec();
+    //registro.splice(8..12, slice);
     
     //desloca a terceira linha em 2 bytes
-    slice= [registro[15],registro[12],registro[13],registro[14]].to_vec();
-    registro.splice(12..16, slice);
-
-    println!("Meu vetor apos deslocar as linhas: {:?}",registro);
-
-    return registro
+    //slice= [registro[15],registro[12],registro[13],registro[14]].to_vec();
+    //registro.splice(12..16, slice);
 }
 
-fn desloca_inverse_linha(mut registro: Vec<usize>)-> Vec<usize>{
-    let mut slice: Vec<_>;
+
+pub fn desloca_inverse_linha(mut registro: Vec<u8>)-> Vec<u8>{
+    let temp: Vec<u8> = vec![
+        registro[0], registro[13], registro[10], registro[7],
+        registro[4], registro[1], registro[14], registro[11],
+        registro[8], registro[5], registro[2], registro[15],
+        registro[12], registro[9], registro[6], registro[3]
+    ];
+
+    return temp
+    
+//    let mut slice: Vec<_>;
 
     //desloca a segunda linha em 1 byte
-    slice= [registro[7],registro[4],registro[5],registro[6]].to_vec();
-    registro.splice(4..8, slice);
+    //slice= [registro[7],registro[4],registro[5],registro[6]].to_vec();
+    //registro.splice(4..8, slice);
 
     //desloca a terceira linha em 2 bytes
-    slice= [registro[10],registro[11],registro[8],registro[9]].to_vec();
-    registro.splice(8..12, slice);
+    //slice= [registro[10],registro[11],registro[8],registro[9]].to_vec();
+    //registro.splice(8..12, slice);
     
     //desloca a quarta linha em 3 bytes
-    slice= [registro[13],registro[14],registro[15],registro[12]].to_vec();
-    registro.splice(12..16, slice);
+    //slice= [registro[13],registro[14],registro[15],registro[12]].to_vec();
+    //registro.splice(12..16, slice);
 
-    println!("Meu vetor apos inverter o deslocamento das linha: {:?}",registro);
+    //println!("Meu vetor apos inverter o deslocamento das linha: {:x?}",registro);
 
-    return registro
+    //return registro
 }
 
-fn xor_chave(mut registro: Vec<usize>, chave: Vec<usize>)-> Vec<usize>{
+pub fn xor_chave(mut registro: Vec<u8>, chave: Vec<u8>)-> Vec<u8>{
     //operação xor bitwise
     for n in 0..=15{
         registro[n] = registro[n] ^ chave[n]
     }
     
-    println!("Meu vetor apos a operação XOR: {:?}",registro);
+    //println!("Meu vetor apos a operação XOR: {:x?}",registro);
 
     return registro
 }
 
+
 // essa função só aceita uma coluna por input
-fn embaralha_colunas(mut registro: Vec<usize>)-> Vec<usize>{
+fn embaralha_colunas(coluna: Vec<u8>)-> Vec<u8>{
 
     // tabela campo de Galois multiplica 2,
     let mult2 = vec![0x00,0x02,0x04,0x06,0x08,0x0a,0x0c,0x0e,0x10,0x12,0x14,0x16,0x18,0x1a,0x1c,0x1e,
@@ -148,21 +168,33 @@ fn embaralha_colunas(mut registro: Vec<usize>)-> Vec<usize>{
 ];
 
     // embaralha os elementos
-    let elementos_embaralhado0 = mult2[registro[0]] ^  mult3[registro[1]] ^ registro[2] ^ registro[3];
-    let elementos_embaralhado1 = registro[0] ^  mult2[registro[1]] ^ mult3[registro[2]] ^ registro[3];
-    let elementos_embaralhado2 = registro[0] ^  registro[1] ^ mult2[registro[2]] ^ mult3[registro[3]];
-    let elementos_embaralhado3 = mult3[registro[0]] ^  registro[1] ^ registro[2] ^ mult2[registro[3]];
+    let elementos_embaralhado0 = mult2[coluna[0] as usize] ^  mult3[coluna[1] as usize] ^ coluna[2] ^ coluna[3];
+    let elementos_embaralhado1 = coluna[0] ^  mult2[coluna[1] as usize] ^ mult3[coluna[2] as usize] ^ coluna[3];
+    let elementos_embaralhado2 = coluna[0] ^  coluna[1] ^ mult2[coluna[2] as usize] ^ mult3[coluna[3] as usize];
+    let elementos_embaralhado3 = mult3[coluna[0] as usize] ^  coluna[1] ^ coluna[2] ^ mult2[coluna[3] as usize];
 
     // retorna a coluna embaralhada
-    let mut col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
+    let col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
 
-    println!("Meu vetor apos o embaralhamento: {:?}",col_embaralhada);
+    //println!("Meu vetor apos o embaralhamento: {:x?}",col_embaralhada);
 
     return col_embaralhada     
 }
 
+
+pub fn embaralha_bloco(registro: Vec<u8>) -> Vec<u8> {
+    let mut temp: Vec<u8> = Vec::new();
+    temp.extend(embaralha_colunas(registro[0..4].to_vec()));
+    temp.extend(embaralha_colunas(registro[4..8].to_vec()));
+    temp.extend(embaralha_colunas(registro[8..12].to_vec()));
+    temp.extend(embaralha_colunas(registro[12..16].to_vec()));
+    //println!("Meu vetor apos o embaralhamento: {:x?}",temp);
+    return temp;
+}
+
+
 // essa função só aceita uma coluna por input
-fn embaralha_inverse_colunas(mut registro: Vec<usize>)-> Vec<usize>{
+fn embaralha_inverse_colunas(mut registro: Vec<u8>)-> Vec<u8>{
 
     // tabela campo de Galois multiplica 9,
     let mult9 = vec![0x00,0x09,0x12,0x1b,0x24,0x2d,0x36,0x3f,0x48,0x41,0x5a,0x53,0x6c,0x65,0x7e,0x77,
@@ -241,15 +273,26 @@ fn embaralha_inverse_colunas(mut registro: Vec<usize>)-> Vec<usize>{
 ];
 
     // embaralha os elementos
-    let elementos_embaralhado0 = mult14[registro[0]] ^  mult11[registro[1]] ^ mult13[registro[2]] ^ mult9[registro[3]];
-    let elementos_embaralhado1 = mult9[registro[0]] ^  mult14[registro[1]] ^ mult11[registro[2]] ^ mult13[registro[3]];
-    let elementos_embaralhado2 = mult13[registro[0]] ^  mult9[registro[1]] ^ mult14[registro[2]] ^ mult11[registro[3]];
-    let elementos_embaralhado3 = mult11[registro[0]] ^  mult13[registro[1]] ^ mult9[registro[2]] ^ mult14[registro[3]];
+    let elementos_embaralhado0 = mult14[registro[0] as usize] ^  mult11[registro[1] as usize] ^ mult13[registro[2] as usize] ^ mult9[registro[3] as usize];
+    let elementos_embaralhado1 = mult9[registro[0] as usize] ^  mult14[registro[1] as usize] ^ mult11[registro[2] as usize] ^ mult13[registro[3] as usize];
+    let elementos_embaralhado2 = mult13[registro[0] as usize] ^  mult9[registro[1] as usize] ^ mult14[registro[2] as usize] ^ mult11[registro[3] as usize];
+    let elementos_embaralhado3 = mult11[registro[0] as usize] ^  mult13[registro[1] as usize] ^ mult9[registro[2] as usize] ^ mult14[registro[3] as usize];
 
     // retorna a coluna embaralhada
     let mut col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
     
-    println!("Meu vetor apos o inverter o embaralhamento: {:?}",col_embaralhada);
+    //println!("Meu vetor apos o inverter o embaralhamento: {:x?}",col_embaralhada);
 
     return col_embaralhada     
+}
+
+
+pub fn embaralha_bloco_inverso(mut registro: Vec<u8>) -> Vec<u8> {
+    let mut temp: Vec<u8> = Vec::new();
+    temp.extend(embaralha_inverse_colunas(registro[0..4].to_vec()));
+    temp.extend(embaralha_inverse_colunas(registro[4..8].to_vec()));
+    temp.extend(embaralha_inverse_colunas(registro[8..12].to_vec()));
+    temp.extend(embaralha_inverse_colunas(registro[12..16].to_vec()));
+    //println!("Meu vetor apos o embaralhamento: {:x?}",temp);
+    return temp;
 }
