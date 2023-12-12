@@ -17,8 +17,8 @@
 - AddRoundKey:
 	Cada byte do estado é combinado com um byte correspondente da chave de round usando a operação XOR.
 
+![all 4 steps](https://github.com/HgrassM/AES_128_Implementation/assets/102628611/31534957-578a-4606-b106-2213e5ef340d)
 
-![[all 4 steps.png]]
 ___
 
 - A operação SubBytes é uma substituição não linear que ocorre em cada byte do estado usando uma tabela de substituição conhecida como S-Box. A S-Box é uma matriz 16x16 que mapeia cada byte de entrada para um byte de saída, proporcionando confusão não linear nos dados. A operação SubBytes é aplicada da seguinte maneira:
@@ -28,8 +28,8 @@ ___
 
 - Essa etapa ajuda a garantir que pequenas mudanças nos dados de entrada causem grandes mudanças na saída, aumentando a segurança do algoritmo.
 
+![sub bytes](https://github.com/HgrassM/AES_128_Implementation/assets/102628611/0fc52d60-d729-4984-b759-af5198dd3f41)
 
-![[sub bytes.png]]
 
 ___
 - A operação ShiftRows é uma operação de permutação que desloca as linhas do estado. A ideia é garantir que cada byte do estado seja influenciado por bytes diferentes nas operações subsequentes. O deslocamento é realizado da seguinte maneira:
@@ -43,8 +43,9 @@ ___
 
 
 
+![shift rows](https://github.com/HgrassM/AES_128_Implementation/assets/102628611/19f241c6-5eea-4fff-b25f-9d74ef1ce2bc)
 
-![[shift rows.png]]
+
 
 ___
 
@@ -56,8 +57,8 @@ ___
 
 
 
+![mix columns](https://github.com/HgrassM/AES_128_Implementation/assets/102628611/75e82f48-d98f-4699-830c-5fe86ae37f61)
 
-![[mix columns.png]]
 
 ___
 
@@ -69,8 +70,8 @@ ___
 - O processo de adição da chave é bidirecional, ou seja, para descriptografar, você simplesmente executa novamente a operação AddRoundKey usando a chave de round apropriada.
 
 
+![addroundkey](https://github.com/HgrassM/AES_128_Implementation/assets/102628611/8eac0ddf-74e1-4612-ab6d-1aa1e6e36c2c)
 
-![[addroundkey.png]]
 
 
 ___
