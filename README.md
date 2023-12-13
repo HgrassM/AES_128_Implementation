@@ -206,10 +206,11 @@ ___
     // retorna a coluna embaralhada
     let col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
 
-    //println!("Meu vetor apos o embaralhamento: {:x?}",col_embaralhada);
 
     return col_embaralhada     
 	}
+
+- O código define duas tabelas de multiplicação no campo de Galois, chamadas mult2 e mult3. Essas tabelas são usadas para multiplicar os elementos da coluna, o código então realiza o embaralhamento dos elementos da coluna original de acordo com as tabelas de multiplicação. O resultado é uma nova coluna, chamada col_embaralhada.
 
  ___
 ## Função embaralha_bloco
@@ -222,23 +223,27 @@ ___
 	    return temp;
 	}
 
+- A função embaralha_bloco recebe um vetor registro de 16 bytes, que representa uma matriz de estado 4x4 do AES-128. O vetor é dividido em quatro partes de 4 bytes cada, correspondendo às colunas da matriz de estado, a função então chama a função embaralha_colunas para cada uma dessas colunas, e os resultados são concatenados no vetor temp. 
 ___
 
 ## Função xor_chave
-	pub fn xor_chave(mut registro: Vec<u8>, chave: Vec<u8>)-> Vec<u8>{
-    //operação xor bitwise
-    for n in 0..=15{
-        registro[n] = registro[n] ^ chave[n]
-    }
-    
+    pub fn xor_chave(mut registro: Vec<u8>, chave: Vec<u8>)-> Vec<u8>{
+	    //operação xor bitwise
+	    for n in 0..=15{
+	        registro[n] = registro[n] ^ chave[n]
+	    }
+	    
+	
+	    return registro
+		}
 
-    return registro
-	}
-
-
+- A função xor_chave recebe dois vetores de bytes, 'registro' e 'chave'. Ela percorre cada posição dos vetores e realiza a operação XOR bitwise entre os bytes correspondentes. A operação XOR é aplicada byte a byte, resultando em uma matriz de estado modificada.
+- Usada para combinar a matriz de estado com a chave de criptografia.
  ___
 
  ## Para a descriptografia foram implementadas funções inversas dos passos usados para criptografar
+ 
+ - **Cada função inversa reverte as alterações feitas em seu respectivo estágio na criptografia**
 
 ___
  ## Função trocar_inverse_bytes
@@ -627,7 +632,7 @@ ___
 	    return exp_key;
 		}
 
-
+- O arquivo key_expansion.rs faz a implementação da expansão de chave. A expansão de chave é uma etapa crucial no AES, onde a chave original é expandida para criar uma série de subchaves que serão utilizadas nas diferentes rodadas do algoritmo.
 ___
 
 
@@ -689,6 +694,8 @@ ___
 	    return state;
 		}
 
+  - Implementa os passos de criptografia e descriptografia nas funções encrypt_block e decrypt_block
+
 ___
 
 # Arquivo Main
@@ -709,7 +716,7 @@ ___
 	    println!("Decodificada: {:0x?}", aes128::decrypt_block(key, cypher));
 		}
 
-
+- Mostra o arquivo original, o arquivo criptografado e depois descriptografado
 ___
 
 ## Referências
