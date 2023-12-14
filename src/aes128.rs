@@ -60,7 +60,7 @@ fn add_padding(mut byte_array: Vec<u8>) -> Vec<u8> {
     }
 
     byte_array.push(0x80);
-    for i in 1..padding_size{
+    for _i in 1..padding_size{
         byte_array.push(0x00);
     }
 
@@ -75,7 +75,7 @@ fn remove_padding(mut byte_array: Vec<u8>) -> Vec<u8> {
 
 pub fn encrypt(mut byte_array: Vec<u8>, key: [u8; 16]) -> Vec<u8>{
     byte_array = add_padding(byte_array);
-    let exp_key = super::key_expansion::generate_exp_key(key);
+    let exp_key = key_expansion::generate_exp_key(key);
 
     let mut result: Vec<u8> = Vec::new();
 
@@ -88,7 +88,7 @@ pub fn encrypt(mut byte_array: Vec<u8>, key: [u8; 16]) -> Vec<u8>{
 
 
 pub fn decrypt(byte_array: Vec<u8>, key: [u8; 16]) -> Vec<u8>{
-    let exp_key = super::key_expansion::generate_exp_key(key);
+    let exp_key = key_expansion::generate_exp_key(key);
 
     let mut result: Vec<u8> = Vec::new();
 

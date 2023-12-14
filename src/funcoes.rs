@@ -85,7 +85,7 @@ pub fn desloca_linha(registro: Vec<u8>)-> Vec<u8>{
 }
 
 
-pub fn desloca_inverse_linha(mut registro: Vec<u8>)-> Vec<u8>{
+pub fn desloca_inverse_linha(registro: Vec<u8>)-> Vec<u8>{
     let temp: Vec<u8> = vec![
         registro[0], registro[13], registro[10], registro[7],
         registro[4], registro[1], registro[14], registro[11],
@@ -194,7 +194,7 @@ pub fn embaralha_bloco(registro: Vec<u8>) -> Vec<u8> {
 
 
 // essa função só aceita uma coluna por input
-fn embaralha_inverse_colunas(mut registro: Vec<u8>)-> Vec<u8>{
+fn embaralha_inverse_colunas(registro: Vec<u8>)-> Vec<u8>{
 
     // tabela campo de Galois multiplica 9,
     let mult9 = vec![0x00,0x09,0x12,0x1b,0x24,0x2d,0x36,0x3f,0x48,0x41,0x5a,0x53,0x6c,0x65,0x7e,0x77,
@@ -279,7 +279,7 @@ fn embaralha_inverse_colunas(mut registro: Vec<u8>)-> Vec<u8>{
     let elementos_embaralhado3 = mult11[registro[0] as usize] ^  mult13[registro[1] as usize] ^ mult9[registro[2] as usize] ^ mult14[registro[3] as usize];
 
     // retorna a coluna embaralhada
-    let mut col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
+    let col_embaralhada = vec![elementos_embaralhado0, elementos_embaralhado1, elementos_embaralhado2, elementos_embaralhado3];
     
     //println!("Meu vetor apos o inverter o embaralhamento: {:x?}",col_embaralhada);
 
@@ -287,7 +287,7 @@ fn embaralha_inverse_colunas(mut registro: Vec<u8>)-> Vec<u8>{
 }
 
 
-pub fn embaralha_bloco_inverso(mut registro: Vec<u8>) -> Vec<u8> {
+pub fn embaralha_bloco_inverso(registro: Vec<u8>) -> Vec<u8> {
     let mut temp: Vec<u8> = Vec::new();
     temp.extend(embaralha_inverse_colunas(registro[0..4].to_vec()));
     temp.extend(embaralha_inverse_colunas(registro[4..8].to_vec()));
