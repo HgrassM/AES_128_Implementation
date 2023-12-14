@@ -73,6 +73,7 @@ fn remove_padding(mut byte_array: Vec<u8>) -> Vec<u8> {
     return byte_array;
 }
 
+
 pub fn encrypt(mut byte_array: Vec<u8>, key: [u8; 16]) -> Vec<u8>{
     byte_array = add_padding(byte_array);
     let exp_key = key_expansion::generate_exp_key(key);
