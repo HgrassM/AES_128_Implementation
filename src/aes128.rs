@@ -51,7 +51,7 @@ fn decrypt_block(expanded_key: Vec<u8>, block: Vec<u8>) -> Vec<u8> {
     return state;
 }
 
-//adiciona um padding ao final
+//adiciona um padding ao final, mesmo se for um multiplo de 16
 fn add_padding(mut byte_array: Vec<u8>) -> Vec<u8> {
     let mut padding_size = 16 - (byte_array.len() % 16);
 
