@@ -13,5 +13,5 @@
 - Gabriel de Castro Dias
 - Heitor de Mattos Oliveira Lima
 - Joao Vitor Dickmann
-- Luis
+- Luís Felipe Hilário Carmona
 
