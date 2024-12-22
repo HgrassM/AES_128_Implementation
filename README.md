@@ -7,11 +7,3 @@
 ### Requisitos
 - Para rodar o projeto você precisa apenas da linguagem Rust instalado em sua máquina. Para informações sobre como instalar Rust, visite [rust-lang.org](https://www.rust-lang.org/).
 
-
-### Alunos
-- Bernardo Ramalho Rabello
-- Gabriel de Castro Dias
-- Heitor de Mattos Oliveira Lima
-- Joao Vitor Dickmann
-- Luís Felipe Hilário Carmona
-
